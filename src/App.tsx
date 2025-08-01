@@ -1,35 +1,152 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useRef } from "react";
+import { create } from "zustand";
+import Draggable from "react-draggable";
+
+import "./App.css";
+
+import { words } from "./words.json";
+
+const USE_TOP_WORDS = 1000;
+const WORDS_TO_DRAW = 70;
+
+interface WordBankWord {
+  id: number;
+  word: string;
+  rotation: number;
+}
+
+function WordBankMagnet({ id, word, rotation }: WordBankWord) {
+  const placeWord = useFridge((fridge) => fridge.placeWord);
+  return (
+    <div
+      className="word-tile"
+      style={{ rotate: `${rotation}deg` }}
+      onClick={placeWord.bind(null, { id, word, rotation })}
+    >
+      {word}
+    </div>
+  );
+}
+
+interface FridgeWord {
+  id: number;
+  word: string;
+  rotation: number;
+  posX: number;
+  posY: number;
+}
+
+function FridgeMagnet({ id, word, rotation, posX, posY }: FridgeWord) {
+  const ref = useRef(null);
+  const takeBackWord = useFridge((fridge) => fridge.takeBackWord);
+  const positionWord = useFridge((fridge) => fridge.positionWord);
+  return (
+    <Draggable
+      nodeRef={ref}
+      bounds="parent"
+      defaultPosition={{ x: posX, y: posY }}
+      onDrag={(_, data) => {
+        positionWord({ id, word, rotation, posX: data.x, posY: data.y });
+      }}
+    >
+      <div
+        className="word-tile placed"
+        ref={ref}
+        style={{ rotate: `${rotation}deg` }}
+        onDoubleClick={takeBackWord.bind(null, {
+          id,
+          word,
+          rotation,
+          posX,
+          posY,
+        })}
+      >
+        {word}
+      </div>
+    </Draggable>
+  );
+}
+
+interface FridgeState {
+  wordBank: WordBankWord[];
+  fridge: FridgeWord[];
+  placeWord: (word: WordBankWord) => void;
+  takeBackWord: (word: FridgeWord) => void;
+  positionWord: (word: FridgeWord) => void;
+}
+
+const useFridge = create<FridgeState>((set) => ({
+  wordBank: drawInitialWords(),
+  fridge: [],
+  placeWord: ({ id, word }: WordBankWord) =>
+    set((state) => ({
+      wordBank: state.wordBank.filter((m) => m.id != id),
+      fridge: [
+        ...state.fridge,
+        { id, word, posX: 0, posY: 0, rotation: randomRotation() },
+      ],
+    })),
+  takeBackWord: ({ id, word }: FridgeWord) => {
+    set((state) => ({
+      wordBank: [{ id, word, rotation: randomRotation() }, ...state.wordBank],
+      fridge: state.fridge.filter((m) => m.id != id),
+    }));
+  },
+  positionWord: (word: FridgeWord) => {
+    set((state) => ({
+      fridge: state.fridge.map((m) => (m.id == word.id ? word : m)),
+    }));
+  },
+}));
+
+function drawWord(): string {
+  const n = Math.floor(Math.random() * USE_TOP_WORDS);
+  return words[n];
+}
+
+function randomRotation(): number {
+  return 5 - Math.random() * 10;
+}
+
+function drawInitialWords(): WordBankWord[] {
+  let w: WordBankWord[] = [];
+  for (let n = 0; n < WORDS_TO_DRAW; n++) {
+    w.push({
+      id: n,
+      rotation: randomRotation(),
+      word: drawWord(),
+    });
+  }
+  return w;
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const wordBank = useFridge((fridge) => fridge.wordBank);
+  const fridge = useFridge((fridge) => fridge.fridge);
 
   return (
     <>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        Click words from the word bank to place on the fridge. Drag to move
+        around. Double-click to remove.
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+      <div className="fridge">
+        {fridge.map((word) => (
+          <FridgeMagnet {...word} key={word.id} />
+        ))}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <div className="word-bank">
+        {wordBank.map((word) => (
+          <WordBankMagnet {...word} key={word.id} />
+        ))}
+      </div>
+      <div>
+        <pre>
+          <code>{JSON.stringify(fridge, null, 2)}</code>
+        </pre>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
