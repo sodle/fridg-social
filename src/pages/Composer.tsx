@@ -2,9 +2,9 @@ import { useRef } from "react";
 import { create } from "zustand";
 import Draggable from "react-draggable";
 
-import "./App.css";
+import "./Composer.css";
 
-import { words } from "./words.json";
+import { words } from "../words.json";
 
 const USE_TOP_WORDS = 1000;
 const WORDS_TO_DRAW = 70;
@@ -16,7 +16,7 @@ interface WordBankWord {
 }
 
 function WordBankMagnet({ id, word, rotation }: WordBankWord) {
-  const placeWord = useFridge((fridge) => fridge.placeWord);
+  const placeWord = useComposer((fridge) => fridge.placeWord);
   return (
     <div
       className="word-tile"
@@ -38,8 +38,8 @@ interface FridgeWord {
 
 function FridgeMagnet({ id, word, rotation, posX, posY }: FridgeWord) {
   const ref = useRef(null);
-  const takeBackWord = useFridge((fridge) => fridge.takeBackWord);
-  const positionWord = useFridge((fridge) => fridge.positionWord);
+  const takeBackWord = useComposer((fridge) => fridge.takeBackWord);
+  const positionWord = useComposer((fridge) => fridge.positionWord);
   return (
     <Draggable
       nodeRef={ref}
@@ -67,7 +67,7 @@ function FridgeMagnet({ id, word, rotation, posX, posY }: FridgeWord) {
   );
 }
 
-interface FridgeState {
+interface ComposerState {
   wordBank: WordBankWord[];
   fridge: FridgeWord[];
   placeWord: (word: WordBankWord) => void;
@@ -75,7 +75,7 @@ interface FridgeState {
   positionWord: (word: FridgeWord) => void;
 }
 
-const useFridge = create<FridgeState>((set) => ({
+const useComposer = create<ComposerState>((set) => ({
   wordBank: drawInitialWords(),
   fridge: [],
   placeWord: ({ id, word }: WordBankWord) =>
@@ -120,9 +120,9 @@ function drawInitialWords(): WordBankWord[] {
   return w;
 }
 
-function App() {
-  const wordBank = useFridge((fridge) => fridge.wordBank);
-  const fridge = useFridge((fridge) => fridge.fridge);
+function Composer() {
+  const wordBank = useComposer((fridge) => fridge.wordBank);
+  const fridge = useComposer((fridge) => fridge.fridge);
 
   return (
     <>
@@ -149,4 +149,4 @@ function App() {
   );
 }
 
-export default App;
+export default Composer;
