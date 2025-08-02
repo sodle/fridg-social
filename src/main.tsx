@@ -20,5 +20,11 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RouterProvider router={router} />
+    <hr />
+    <div>
+      <a href="https://github.com/sodle/fridge-social" target="_blank">
+        View Source Code
+      </a>
+    </div>
   </StrictMode>
 );
