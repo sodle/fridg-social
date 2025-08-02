@@ -5,6 +5,7 @@ import {
   GoogleAuthProvider,
   signOut,
   signInWithPopup,
+  signInAnonymously,
 } from "firebase/auth";
 
 export function useAuth(): User | null {
@@ -18,6 +19,10 @@ export function useAuth(): User | null {
 
 export async function signInWithGoogle() {
   return signInWithPopup(auth, new GoogleAuthProvider());
+}
+
+export async function signInAnon() {
+  return signInAnonymously(auth);
 }
 
 export async function signOutUser() {

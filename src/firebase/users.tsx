@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 
 export async function lookupUsername(accountId: string): Promise<string> {
   const userDoc = await getDoc(doc(firestore, "users", accountId));
-  return userDoc.data()?.username ?? `New user ${accountId}`;
+  return userDoc.data()?.username ?? `Anonymous user ${accountId}`;
 }
 
 export function useProfile(accountId: string): UserProfile | null {

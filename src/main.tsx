@@ -5,7 +5,12 @@ import { createBrowserRouter, RouterProvider } from "react-router";
 import "./index.css";
 import Composer from "./pages/Composer.tsx";
 import Timeline from "./pages/Timeline.tsx";
-import { signInWithGoogle, signOutUser, useAuth } from "./firebase/auth.tsx";
+import {
+  signInAnon,
+  signInWithGoogle,
+  signOutUser,
+  useAuth,
+} from "./firebase/auth.tsx";
 import { setUsername, useProfile } from "./firebase/users.tsx";
 
 const router = createBrowserRouter([
@@ -61,7 +66,7 @@ function AccountBar() {
     return (
       <>
         <div>
-          Signed in as {user.email}.{" "}
+          Signed in as {user.email ?? "anonymous"}.{" "}
           <button onClick={signOutUser}>Sign out</button>
         </div>
         <ProfileUpdater accountId={user.uid} />
@@ -72,6 +77,7 @@ function AccountBar() {
       <div>
         Not signed in.{" "}
         <button onClick={signInWithGoogle}>Sign in with Google</button>
+        <button onClick={signInAnon}>Sign in anonymously</button>
       </div>
     );
   }
