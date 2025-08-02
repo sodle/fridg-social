@@ -6,6 +6,9 @@ import "./Composer.css";
 
 import { words } from "../words.json";
 import type { FridgeWord } from "../types/FridgeWord";
+import { Link, useNavigate } from "react-router";
+import { createPost } from "../firebase/posts";
+import { useAuth } from "../firebase/auth";
 
 const USE_TOP_WORDS = 1000;
 const WORDS_TO_DRAW = 70;
@@ -66,6 +69,7 @@ interface ComposerState {
   placeWord: (word: WordBankWord) => void;
   takeBackWord: (word: FridgeWord) => void;
   positionWord: (word: FridgeWord) => void;
+  clearFridge: () => void;
 }
 
 const useComposer = create<ComposerState>((set) => ({
@@ -89,6 +93,9 @@ const useComposer = create<ComposerState>((set) => ({
     set((state) => ({
       fridge: state.fridge.map((m) => (m.id == word.id ? word : m)),
     }));
+  },
+  clearFridge: () => {
+    set(() => ({ fridge: [] }));
   },
 }));
 
@@ -116,13 +123,36 @@ function drawInitialWords(): WordBankWord[] {
 function Composer() {
   const wordBank = useComposer((fridge) => fridge.wordBank);
   const fridge = useComposer((fridge) => fridge.fridge);
+  const clearFridge = useComposer((fridge) => fridge.clearFridge);
+  const user = useAuth();
+  const navigate = useNavigate();
+
+  async function sendPost() {
+    if (!user) {
+      alert("You must be signed in to make a post.");
+      return;
+    }
+
+    await createPost({
+      authorId: user.uid,
+      timestamp: new Date(),
+      words: fridge,
+    });
+    await navigate("/");
+    clearFridge();
+  }
 
   return (
     <>
       <h1>New post</h1>
       <div>
+        <Link to="/">&larr; Back to timeline</Link>
+      </div>
+      <div>
         Click words from the word bank to place on the fridge. Drag to move
-        around. Double-click to remove.
+        around. Double-click to remove.{" "}
+        <button onClick={clearFridge}>Clear</button>
+        <button onClick={sendPost}>Post</button>
       </div>
       <div className="fridge">
         {fridge.map((word) => (

@@ -5,6 +5,7 @@ import {
   orderBy,
   onSnapshot,
   DocumentSnapshot,
+  addDoc,
 } from "firebase/firestore";
 import { useState, useEffect } from "react";
 
@@ -49,4 +50,8 @@ export function usePost(id: string): Post {
     return unsub;
   }, []);
   return post;
+}
+
+export async function createPost(post: Post) {
+  return addDoc(collection(firestore, "posts"), post);
 }

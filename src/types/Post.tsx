@@ -1,7 +1,7 @@
 import type { FridgeWord } from "./FridgeWord";
 
 export interface Post {
-  id: string;
+  id?: string;
   timestamp: Date;
   authorId: string;
   words: FridgeWord[];
