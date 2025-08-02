@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "update-db": "firebase deploy --only firestore"
+    "update-db": "firebase deploy --only firestore",
+    "update-functions": "firebase deploy --only functions"
   },
   "dependencies": {
     "firebase": "^12.0.0",

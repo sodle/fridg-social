@@ -1,13 +1,28 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { usePosts } from "../firebase/posts";
 import type { Post } from "../types/Post";
 
 import "./Composer.css";
+import { lookupUsername } from "../firebase/users";
 
-function TimelinePost({ post: { author, words, timestamp } }: { post: Post }) {
+function TimelinePost({
+  post: { authorId, words, timestamp },
+}: {
+  post: Post;
+}) {
+  const [resolvedUsername, setResolvedUsername] = useState("unknown user");
+
+  useEffect(() => {
+    (async () => {
+      const authorName = await lookupUsername(authorId);
+      setResolvedUsername(authorName);
+    })();
+  }, []);
+
   return (
     <div>
-      <h2>{author}</h2>
+      <h2>{resolvedUsername}</h2>
       <div className="fridge">
         {words.map(({ id, word, posX, posY, rotation }) => (
           <div

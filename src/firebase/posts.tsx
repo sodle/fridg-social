@@ -15,7 +15,7 @@ function docToPost(doc: DocumentSnapshot): Post {
   const data = doc.data();
   return {
     id: doc.id,
-    author: data?.author,
+    authorId: data?.authorId,
     timestamp: data?.timestamp?.toDate() ?? new Date(0),
     words: data?.words,
   };
@@ -38,7 +38,7 @@ export function usePosts(): Post[] {
 export function usePost(id: string): Post {
   const [post, setPost] = useState<Post>({
     id: "fake",
-    author: "nobody",
+    authorId: "nobody",
     timestamp: new Date(0),
     words: [],
   });
