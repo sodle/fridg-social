@@ -5,6 +5,7 @@ import Draggable from "react-draggable";
 import "./Composer.css";
 
 import { words } from "../words.json";
+import type { FridgeWord } from "../types/FridgeWord";
 
 const USE_TOP_WORDS = 1000;
 const WORDS_TO_DRAW = 70;
@@ -26,14 +27,6 @@ function WordBankMagnet({ id, word, rotation }: WordBankWord) {
       {word}
     </div>
   );
-}
-
-interface FridgeWord {
-  id: number;
-  word: string;
-  rotation: number;
-  posX: number;
-  posY: number;
 }
 
 function FridgeMagnet({ id, word, rotation, posX, posY }: FridgeWord) {
@@ -126,6 +119,7 @@ function Composer() {
 
   return (
     <>
+      <h1>New post</h1>
       <div>
         Click words from the word bank to place on the fridge. Drag to move
         around. Double-click to remove.
