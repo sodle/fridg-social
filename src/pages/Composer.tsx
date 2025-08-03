@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router";
 import { createPost } from "../firebase/posts";
 import { useAuth } from "../firebase/auth";
 
-const USE_TOP_WORDS = 1000;
+const USE_TOP_WORDS = 3000;
 const WORDS_TO_DRAW = 70;
 
 interface WordBankWord {
