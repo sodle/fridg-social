@@ -90,7 +90,7 @@ createRoot(document.getElementById("root")!).render(
     <RouterProvider router={router} />
     <hr />
     <div>
-      <a href="https://github.com/sodle/fridge-social" target="_blank">
+      <a href="https://github.com/sodle/fridg-social" target="_blank">
         View Source Code
       </a>
     </div>
