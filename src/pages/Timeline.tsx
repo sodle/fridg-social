@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
-import { usePosts } from "../firebase/posts";
+import { usePost, usePosts } from "../firebase/posts";
 import type { Post } from "../types/Post";
 
 import "./Composer.css";
 import { lookupUsername } from "../firebase/users";
 
 function TimelinePost({
-  post: { authorId, words, timestamp },
+  post: { id, authorId, words, timestamp },
 }: {
   post: Post;
 }) {
   const [resolvedUsername, setResolvedUsername] = useState("unknown user");
+  const { likeCount, liked, like, unlike } = usePost(id ?? "fake post");
 
   useEffect(() => {
     (async () => {
@@ -37,7 +38,12 @@ function TimelinePost({
           </div>
         ))}
       </div>
-      <p>{timestamp.toLocaleString()}</p>
+      <p>
+        <button className="like-button" onClick={liked ? unlike : like}>
+          {liked ? "Unlike" : "Like"}
+        </button>{" "}
+        {likeCount} likes &bull; {timestamp.toLocaleString()}
+      </p>
     </div>
   );
 }
